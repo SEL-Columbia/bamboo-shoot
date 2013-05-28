@@ -1,0 +1,3 @@
+[submodule "shoot/static/bamboo.js"]
+	path = shoot/static/bamboo.js
+	url = git://github.com/modilabs/bamboo.js.git

@@ -1,0 +1,19 @@
+<p>This is the partial for view 1.</p>
+<p class="is-drinker" ng-show="client.isDrinker">Would you like a tusker?</p>
+<div ng-controller="NestedCtrl">
+    <h2>{{the_title}}</h2>
+    <a class="btn" ng-click="openModal()">Open me!</a>
+    <div modal="shouldBeOpen" close="closeModal()">
+        <div class="modal-header">
+            <h4>I'm a modal!</h4>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li ng-repeat="item in items"><a ng-click="onItemClick(this)">{{item}}</a></li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning cancel" ng-click="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+[app:main]
+use = egg:shoot
+
+pyramid.reload_templates = true
+pyramid.debug_authorization = false
+pyramid.debug_notfound = false
+pyramid.debug_routematch = false
+pyramid.default_locale_name = en
+pyramid.includes =
+    pyramid_debugtoolbar
+    pyramid_tm
+
+#sqlalchemy.url = sqlite:///%(here)s/shoot.sqlite
+sqlalchemy.url = mysql://root:@localhost/shoot
+
+# By default, the toolbar only appears for clients from IP addresses
+# '127.0.0.1' and '::1'.
+# debugtoolbar.hosts = 127.0.0.1 ::1
+
+session_key =
+auth_key =

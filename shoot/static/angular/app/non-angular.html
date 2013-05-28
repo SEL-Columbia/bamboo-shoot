@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<a href="#" class="add-to-list">Click Me</a>
+<ul class="nav">
+    <li>Item 1</li>
+</ul>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+       $('a.add-to-list').click(function(){
+           var num_items = $('ul.nav li').length;
+           $('ul.nav').append($('<li>').html("Item " + (++num_items)));
+       });
+    });
+</script>
+</body>
+</html>

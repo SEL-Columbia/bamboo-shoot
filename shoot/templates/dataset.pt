@@ -1,0 +1,101 @@
+<metal:main use-macro="load: layout.pt" tal:define="user dataset.user">
+    <metal:container fill-slot="container">
+        <div class="span2">
+            <ul class="nav nav-list bamboo-actions-sidenav" data-spy="affix">
+                <li><a href="#info"><i class="icon-chevron-right"></i>
+                    Info</a></li>
+                <li><a href="#calculations"><i class="icon-chevron-right"></i>
+                    Calculations</a></li>
+                <li><a href="#aggregations"><i class="icon-chevron-right"></i>
+                    Aggregations</a>
+                </li>
+            </ul>
+        </div>
+        <div class="span10">
+            <section id="info" ng-controller="InfoCtrl">
+                <div class="page-header">
+                    <h2>Info</h2>
+                </div>
+                <h3>Fields</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td>#</td>
+                        <td>ID</td>
+                        <td>label</td>
+                        <td>simple type</td>
+                        <td>olap type</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="(field, def) in info.schema">
+                        <td>{{$index + 1}}</td>
+                        <td>{{field}}</td>
+                        <td>{{def.label}}</td>
+                        <td>{{def.simpletype}}</td>
+                        <td>{{def.olap_type}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="calculations" ng-controller="CalculationsCtrl">
+                <div class="page-header">
+                    <h2>Calculations</h2>
+                </div>
+                <form>
+                    <fieldset>
+                        <label>Calculation name</label>
+                        <input type="text" placeholder="e.g. is_rich"
+                               name="name" ng-model="new_calculation.name"/>
+                        <label>Formula</label>
+                        <input type="text" placeholder="e.g. income>50"
+                               name="formula"
+                               ng-model="new_calculation.formula"/>
+                        <br/>
+                        <button ng-click="createCalculation(calculation)"
+                                class="btn">Create
+                        </button>
+                    </fieldset>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td>#</td>
+                        <td>name</td>
+                        <td>formula</td>
+                        <td>state</td>
+                        <td>Actions</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="calculation in calculations">
+                        <td>{{$index + 1}}</td>
+                        <td>{{calculation.name}}</td>
+                        <td>{{calculation.formula}}</td>
+                        <td>{{calculation.state}}</td>
+                        <td>
+                            <button class="btn"
+                                    ng-click="removeCalculation(calculation)"><i
+                                    class="icon-trash"></i></button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="aggregations" ng-controller="AggregationsCtrl">
+                <div class="page-header">
+                    <h2>Aggregations</h2>
+                </div>
+
+            </section>
+        </div>
+    </metal:container>
+    <metal:script fill-slot="script">
+        bamboo.settings.URL = '${dataset.bamboo_host}';
+        var dataset_id = '${dataset.dataset_id}';
+    </metal:script>
+</metal:main>
+
+
