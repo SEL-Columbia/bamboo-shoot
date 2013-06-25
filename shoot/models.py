@@ -203,9 +203,36 @@ class Dashboard(Base):
             'user', traverse=(self.user.username, 'dashboards', self.slug,
                               'charts',))
 
+    def url(self, request):
+        return request.route_url(
+            'user', traverse=(self.user.username, 'dashboards', self.slug))
+
     def __json__(self, request):
         return {
             'title': self.title,
             'date_created': self.added_on.isoformat(),
             'charts_url': self.charts_url(request)
+        }
+
+
+class Chart(Base):
+    __tablename__ = 'chart'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100), nullable=False)
+    x_field_id = Column(String(100), nullable=False)
+    y_field_id = Column(String(100), nullable=False)
+    dashboard_id = Column(Integer, ForeignKey('dashboard.id'), nullable=False)
+    dashboard = relationship('Dashboard', backref=backref('charts'))
+    dataset_id = Column(Integer, ForeignKey('dataset.id'), nullable=False)
+    dataset = relationship('Dataset', backref=backref('charts'))
+    added_on = Column(DateTime(
+        timezone=True), nullable=False, default=func.now())
+
+    def __json__(self, request):
+        return {
+            'title': self.title,
+            'bamboo_host': self.dataset.bamboo_host,
+            'dataset_id': self.dataset.dataset_id,
+            'x_field_id': self.x_field_id,
+            'y_field_id': self.y_field_id
         }

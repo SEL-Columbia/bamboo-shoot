@@ -46,12 +46,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="brand" href="${user.url(request)}">Bamboo Stem</a>
+                <a class="brand" href="${user.url(request)}">Bamboo Shoot</a>
 
                 <div class="nav-collapse collapse">
                     <ul class="nav">
                         <li tal:define="url user.url(request)" tal:attributes="{'class': 'active' if request.url==url else None}"><a href="${url}">Datasets</a></li>
-                        <li><a href="#about">Dashboards</a></li>
+                        <li tal:define="url request.route_url('user', traverse=(user.username, 'dashboards'))" tal:attributes="{'class': 'active' if request.url==url else None}"><a href="${url}">Dashboards</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

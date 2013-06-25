@@ -1,0 +1,39 @@
+<metal:main use-macro="load: layout.pt">
+    <metal:container fill-slot="container">
+        <div class="span12">
+            <h2>Dashboards</h2>
+
+            <form action="${request.route_url('user', traverse=(user.username, 'datasets', 'new'))}" method="POST">
+                <fieldset>
+                    <legend>Add a Dasboard</legend>
+                    <label>Name</label>
+                    <input type="text" name="url" placeholder="e.g. Students Survey" class="input-xxlarge" />
+                    <span class="help-block">The name of the new dashboard.</span>
+                    <button type="submit" class="btn">Create</button>
+                </fieldset>
+            </form>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Name</td>
+                    <td>URL</td>
+                    <td>Date Created</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr tal:repeat="dashboard user.dashboards">
+                    <td>${repeat.dashboard.number}</td>
+                    <td>${dashboard.title}</td>
+                    <td><a href="${dashboard.url(request)}">${dashboard.url(request)}</a></td>
+                    <td>${dashboard.added_on}</td>
+                </tr>
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+    </metal:container>
+</metal:main>

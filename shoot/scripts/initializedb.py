@@ -15,6 +15,7 @@ from ..models import (
     User,
     Dataset,
     Dashboard,
+    Chart,
 )
 
 
@@ -37,15 +38,21 @@ def main(argv=sys.argv):
     Base.metadata.create_all(engine)
     with transaction.manager:
         user = User(username="larryweya")
-        dataset = Dataset(
+        dataset1 = Dataset(
             user=user, bamboo_host="http://bamboo.io",
             dataset_id="d59dee1092e74e2da947ac75c7b5fcfa")
-        dataset = Dataset(
+        dataset2 = Dataset(
             user=user, bamboo_host="http://bamboo.io",
             dataset_id="bb9bdf69384b4400a08fcf7ecc4b0a01")
-        dataset2 = Dataset(
-            user=user, bamboo_host="http://192.168.56.2:8000",
+        dataset3 = Dataset(
+            user=user, bamboo_host="http://192.168.56.2:8080",
             dataset_id="361bbd13d61c47718dd8e1ec36197acc")
         dashboard = Dashboard(user=user, title="Students Survey",
                               slug="students-survey")
+        chart1 = Chart(dashboard=dashboard, dataset=dataset3,
+                       title="Gender by Grade", x_field_id='sex',
+                       y_field_id='grade')
+        chart2 = Chart(dashboard=dashboard, dataset=dataset3,
+                       title="Income by Gender", x_field_id='income',
+                       y_field_id='sex')
         DBSession.add(user)

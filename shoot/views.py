@@ -14,7 +14,8 @@ from .models import (
     User,
     Dataset,
     DatasetFactory,
-    Dashboard
+    Dashboard,
+    DashboardFactory,
 )
 
 
@@ -58,6 +59,14 @@ def dataset_create(request):
     return {'user': user}
 
 
+@view_config(context=DashboardFactory, route_name='user', name='',
+             renderer='templates/dashboards.pt')
+def dashboard_list(request):
+    user = request.context.__parent__
+    dashboards = Dashboard.query().filter_by(user=user)
+    return {'user': user, 'dashboards': dashboards}
+
+
 @view_config(context=Dashboard, route_name='user', name='',
              renderer='templates/dashboard.pt')
 def dashboard_show(request):
@@ -68,4 +77,4 @@ def dashboard_show(request):
              renderer='json')
 def charts_show(request):
     dashboard = request.context
-    return {'dashboard': dashboard}
+    return {'charts': dashboard.charts}

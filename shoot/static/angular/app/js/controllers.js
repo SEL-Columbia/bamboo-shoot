@@ -65,27 +65,10 @@ angular.module('BambooUI.controllers', [])
         var colors = ['#1f77b4', '#d62728'];
         $http({method: 'GET', url: charts_url}).
             success(function (data, status, headers, config) {
-                $scope.charts = [
-                    {
-                        title: "Gender by Grade",
-                        dataset_host_url: "http://192.168.56.2:8080",
-                        dataset_id: "361bbd13d61c47718dd8e1ec36197acc",
-                        type: "multiBarHorizontalChart",
-                        x_field_id: "sex",
-                        y_field_id: "grade"
-                    },
-                    {
-                        title: "Income by Gender",
-                        dataset_host_url: "http://192.168.56.2:8080",
-                        dataset_id: "361bbd13d61c47718dd8e1ec36197acc",
-                        type: "multiBarHorizontalChart",
-                        x_field_id: "income",
-                        y_field_id: "sex"
-                    }
-                ];
+                $scope.charts = data.charts;
                 // for each chart, get its bamboo data
                 $scope.charts.forEach(function(chart){
-                    bamboo.settings.URL = chart.dataset_host_url;
+                    bamboo.settings.URL = chart.bamboo_host;
 
                     var select = {};
                     select[chart.x_field_id] = 1;
