@@ -1,0 +1,32 @@
+<metal:main use-macro="load: layout.pt" tal:define="user dashboard.user">
+    <metal:script fill-slot="style">
+        <style>
+            #chart svg {
+                height: 400px;
+            }
+        </style>
+    </metal:script>
+    <metal:container fill-slot="container">
+        <div class="span8" data-ng-controller="DashboardCtrl">
+            <div data-ng-repeat="chart in charts" id="chart-{{$index}}">
+                <h2>{{chart.title}}</h2>
+                <svg data-shoot-chart="" height="400" data="chart.data"></svg>
+            </div>
+        </div>
+    </metal:container>
+    <metal:script fill-slot="script">
+        <script type="text/javascript">
+            if (!Object.keys) Object.keys = function(o) {
+              if (o !== Object(o))
+                throw new TypeError('Object.keys called on a non-object');
+              var k=[],p;
+              for (p in o) if (Object.prototype.hasOwnProperty.call(o,p)) k.push(p);
+              return k;
+            }
+
+            var charts_url = '${dashboard.charts_url(request)}';
+        </script>
+    </metal:script>
+</metal:main>
+
+

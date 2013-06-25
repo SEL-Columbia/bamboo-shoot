@@ -14,6 +14,7 @@ from ..models import (
     Base,
     User,
     Dataset,
+    Dashboard,
 )
 
 
@@ -39,4 +40,12 @@ def main(argv=sys.argv):
         dataset = Dataset(
             user=user, bamboo_host="http://bamboo.io",
             dataset_id="d59dee1092e74e2da947ac75c7b5fcfa")
+        dataset = Dataset(
+            user=user, bamboo_host="http://bamboo.io",
+            dataset_id="bb9bdf69384b4400a08fcf7ecc4b0a01")
+        dataset2 = Dataset(
+            user=user, bamboo_host="http://192.168.56.2:8000",
+            dataset_id="361bbd13d61c47718dd8e1ec36197acc")
+        dashboard = Dashboard(user=user, title="Students Survey",
+                              slug="students-survey")
         DBSession.add(user)

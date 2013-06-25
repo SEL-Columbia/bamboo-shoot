@@ -14,6 +14,7 @@ from .models import (
     User,
     Dataset,
     DatasetFactory,
+    Dashboard
 )
 
 
@@ -55,3 +56,16 @@ def dataset_create(request):
             request.route_url('user', traverse=(
                 user.username, 'datasets', dataset.dataset_id)))
     return {'user': user}
+
+
+@view_config(context=Dashboard, route_name='user', name='',
+             renderer='templates/dashboard.pt')
+def dashboard_show(request):
+    dashboard = request.context
+    return {'dashboard': dashboard}
+
+@view_config(context=Dashboard, route_name='user', name='charts',
+             renderer='json')
+def charts_show(request):
+    dashboard = request.context
+    return {'dashboard': dashboard}

@@ -28,6 +28,18 @@ angular.module('BambooUI.services', [])
                 });
                 return deferred.promise;
             },
+
+            querySummary: function(dataset_id, select, group) {
+                var deferred = $q.defer();
+                var dataset = new bamboo.Dataset({id: dataset_id});
+                dataset.summary(select, group, function(result){
+                    applyScopeSafe(function(){
+                        deferred.resolve(result);
+                    });
+                });
+                return deferred.promise;
+            },
+
             queryCalculations: function (dataset_id) {
                 var deferred = $q.defer();
                 var dataset = new bamboo.Dataset({id: dataset_id});

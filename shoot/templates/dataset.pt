@@ -1,4 +1,6 @@
 <metal:main use-macro="load: layout.pt" tal:define="user dataset.user">
+    <metal:script fill-slot="style">
+    </metal:script>
     <metal:container fill-slot="container">
         <div class="span2">
             <ul class="nav nav-list bamboo-actions-sidenav" data-spy="affix">
@@ -93,8 +95,10 @@
         </div>
     </metal:container>
     <metal:script fill-slot="script">
+        <script type="text/javascript">
         bamboo.settings.URL = '${dataset.bamboo_host}';
         var dataset_id = '${dataset.dataset_id}';
+        </script>
     </metal:script>
 </metal:main>
 

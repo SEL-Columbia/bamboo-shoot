@@ -1,3 +1,6 @@
 [submodule "shoot/static/bamboo.js"]
 	path = shoot/static/bamboo.js
 	url = git://github.com/modilabs/bamboo.js.git
+[submodule "shoot/static/nvd3"]
+	path = shoot/static/nvd3
+	url = https://github.com/novus/nvd3.git

@@ -91,6 +91,32 @@ class DatasetFactory(object):
             return dataset
 
 
+# TODO: create a generic model factory for all model lookups
+class DashboardFactory(object):
+    __name__ = None
+    __parent__ = None
+
+    def __init__(self, request):
+        self.request = request
+
+    def __getitem__(self, key):
+        logger = logging.getLogger(__name__)
+        try:
+            dashboard = Dashboard.query().filter_by(
+                slug=key, user=self.__parent__).one()
+        except NoResultFound:
+            logger.debug(
+                "Couldn't find a dashboard with slug {0}, {1}".format(
+                    key, self.request.url))
+            raise KeyError
+        else:
+            logger.debug(
+                "Found a dashboard with slug %s" % key)
+            dashboard.__parent__ = self
+            dashboard.__name__ = key
+            return dashboard
+
+
 class RootFactory(object):
     __acl__ = [
         (Allow, "g:su", ALL_PERMISSIONS),
@@ -109,7 +135,7 @@ class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     username = Column(String(100), unique=True, nullable=False)
-    _factories = {'datasets': DatasetFactory}
+    _factories = {'datasets': DatasetFactory, 'dashboards': DashboardFactory}
 
     def __getitem__(self, key):
         logger = logging.getLogger(__name__)
@@ -158,3 +184,28 @@ class Dataset(Base):
     def url(self, request):
         return request.route_url(
             'user', traverse=(self.user.username, 'datasets', self.dataset_id,))
+
+
+class Dashboard(Base):
+    __tablename__ = 'dashboard'
+    __table_args__ = (
+        Index('uix_user_id_slug', 'user_id', 'slug', unique=True),)
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    title = Column(String(100), nullable=False)
+    slug = Column(String(100), nullable=False)
+    user = relationship('User', backref=backref('dashboards'))
+    added_on = Column(DateTime(
+        timezone=True), nullable=False, default=func.now())
+
+    def charts_url(self, request):
+        return request.route_url(
+            'user', traverse=(self.user.username, 'dashboards', self.slug,
+                              'charts',))
+
+    def __json__(self, request):
+        return {
+            'title': self.title,
+            'date_created': self.added_on.isoformat(),
+            'charts_url': self.charts_url(request)
+        }
