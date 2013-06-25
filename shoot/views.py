@@ -73,6 +73,21 @@ def dashboard_show(request):
     dashboard = request.context
     return {'dashboard': dashboard}
 
+
+@view_config(context=DashboardFactory, route_name='user', name='new',
+             request_method='POST')
+def dashboard_create(request):
+    user = request.context.__parent__
+    dashboard = Dashboard(user=user)
+    dashboard.title = request.POST['title']
+    dashboard.save()
+    DBSession.flush()
+    return HTTPFound(
+        request.route_url('user', traverse=(
+            user.username, 'dashboards', dashboard.slug)))
+            #user.username, 'dashboards', dashboard.slug))) TODO: use this misspelling in tests
+
+
 @view_config(context=Dashboard, route_name='user', name='charts',
              renderer='json')
 def charts_show(request):

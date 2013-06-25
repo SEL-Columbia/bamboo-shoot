@@ -21,6 +21,7 @@ requires = [
     'webtest',
     'fabric',
     'uwsgi',
+    'python-slugify',
 ]
 
 setup(name='shoot',

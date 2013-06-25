@@ -3,11 +3,11 @@
         <div class="span12">
             <h2>Dashboards</h2>
 
-            <form action="${request.route_url('user', traverse=(user.username, 'datasets', 'new'))}" method="POST">
+            <form action="${request.route_url('user', traverse=(user.username, 'dashboards', 'new'))}" method="POST">
                 <fieldset>
                     <legend>Add a Dasboard</legend>
                     <label>Name</label>
-                    <input type="text" name="url" placeholder="e.g. Students Survey" class="input-xxlarge" />
+                    <input type="text" name="title" placeholder="e.g. Students Survey" class="input-xxlarge" />
                     <span class="help-block">The name of the new dashboard.</span>
                     <button type="submit" class="btn">Create</button>
                 </fieldset>

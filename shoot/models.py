@@ -1,18 +1,23 @@
 import logging
 import re
+from slugify import slugify
 from pyramid.security import (Allow, Deny, Everyone, Authenticated,
                               ALL_PERMISSIONS, DENY_ALL)
 
-from sqlalchemy import (Column, Integer, String, ForeignKey, DateTime, func)
-
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    DateTime,
+    func,
+    event,
+)
 from sqlalchemy.orm import (relationship, backref, synonym)
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.schema import Index, UniqueConstraint
-
 from sqlalchemy.ext.declarative import declarative_base
-
 from sqlalchemy.orm import (scoped_session, sessionmaker)
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -20,6 +25,38 @@ from zope.sqlalchemy import ZopeTransactionExtension
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
 dataset_regexp = re.compile(r'(.+)/datasets/(\w+)')
+
+
+def generate_slug(column, value, unique_query):
+    i = 0
+    base_slug = slugify(value)
+    slug = base_slug
+    while unique_query.filter(column == slug).count() > 0:
+        i += 1
+        slug = "{0}-{1}".format(base_slug, i)
+    return slug
+
+
+def set_slug(mapper, connection, target):
+    target_column = mapper.class_.slug_target_column()
+    source_column = mapper.class_.slug_source_column()
+    slug = generate_slug(
+        target_column, target.__getattribute__(
+            source_column.name), target.slug_unique_query())
+    target.__setattr__(target_column.name, slug)
+
+
+class Slugable(object):
+    def slug_unique_query(self):
+        raise NotImplementedError
+
+    @classmethod
+    def slug_target_column(cls):
+        return cls.slug
+
+    @classmethod
+    def slug_source_column(cls):
+        return cls.name
 
 
 class Model(object):
@@ -186,7 +223,7 @@ class Dataset(Base):
             'user', traverse=(self.user.username, 'datasets', self.dataset_id,))
 
 
-class Dashboard(Base):
+class Dashboard(Base, Slugable):
     __tablename__ = 'dashboard'
     __table_args__ = (
         Index('uix_user_id_slug', 'user_id', 'slug', unique=True),)
@@ -197,6 +234,13 @@ class Dashboard(Base):
     user = relationship('User', backref=backref('dashboards'))
     added_on = Column(DateTime(
         timezone=True), nullable=False, default=func.now())
+
+    def slug_unique_query(self):
+        return Dataset.query()
+
+    @classmethod
+    def slug_source_column(cls):
+        return cls.title
 
     def charts_url(self, request):
         return request.route_url(
@@ -213,6 +257,8 @@ class Dashboard(Base):
             'date_created': self.added_on.isoformat(),
             'charts_url': self.charts_url(request)
         }
+
+event.listen(Dashboard, 'before_insert', set_slug)
 
 
 class Chart(Base):
