@@ -1,41 +1,7 @@
 <metal:main use-macro="load: layout.pt">
     <metal:container fill-slot="container">
         <div class="span12">
-            <h2>Datasets</h2>
-
-            <form action="${request.route_url('user', traverse=(user.username, 'datasets', 'new'))}" method="POST">
-                <fieldset>
-                    <legend>Add a dataset</legend>
-                    <label>Dataset URL</label>
-                    <input type="text" name="url" placeholder="e.g. http://bamboo.io/datasets/bb9bdf69384b4400a08fcf7ecc4b0a01" class="input-xxlarge" />
-                    <span class="help-block">The full URL to the bamboo dataset.</span>
-                    <button type="submit" class="btn">Submit</button>
-                </fieldset>
-            </form>
-
-            <table class="table">
-                <thead>
-                <tr>
-                    <td>#</td>
-                    <td>Description</td>
-                    <td>Host</td>
-                    <td>Dataset ID</td>
-                    <td>Date Created</td>
-                </tr>
-                </thead>
-                <tbody>
-                <tr tal:repeat="dataset user.datasets">
-                    <td>${repeat.dataset.number}</td>
-                    <td><a href="${dataset.url(request)}">${dataset.title}</a></td>
-                    <td>${dataset.bamboo_host}</td>
-                    <td>${dataset.dataset_id}</td>
-                    <td>${dataset.added_on}</td>
-                </tr>
-                </tbody>
-                <tfoot>
-
-                </tfoot>
-            </table>
+            <h2>${user.username}</h2>
         </div>
     </metal:container>
 </metal:main>

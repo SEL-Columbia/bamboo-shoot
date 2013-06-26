@@ -6,10 +6,13 @@
             <form action="${request.route_url('user', traverse=(user.username, 'datasets', 'new'))}" method="POST">
                 <fieldset>
                     <legend>Add a dataset</legend>
+                    <label>Dataset's Title</label>
+                    <input type="text" name="title" placeholder="e.g. Students Dataset" class="input-xlarge" />
+                    <span class="help-block">A descriptive title for the dataset.</span>
                     <label>Dataset URL</label>
                     <input type="text" name="url" placeholder="e.g. http://bamboo.io/datasets/bb9bdf69384b4400a08fcf7ecc4b0a01" class="input-xxlarge" />
                     <span class="help-block">The full URL to the bamboo dataset.</span>
-                    <button type="submit" class="btn">Submit</button>
+                    <button type="submit" class="btn">Create</button>
                 </fieldset>
             </form>
 

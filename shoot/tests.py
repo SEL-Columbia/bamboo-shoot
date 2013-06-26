@@ -15,7 +15,7 @@ from .models import (DBSession, Base, User, Dataset, DatasetFactory)
 class TestViews(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
-        self.config.include('stem')
+        self.config.include('shoot')
         from sqlalchemy import create_engine
         engine = create_engine('sqlite://')
         DBSession.configure(bind=engine)
@@ -26,19 +26,23 @@ class TestViews(unittest.TestCase):
         DBSession.remove()
         testing.tearDown()
 
-    def test_user_view(self):
-        from .views import user_show
+    def test_dataset_list(self):
+        from .views import dataset_list
         request = testing.DummyRequest()
-        request.context = User(username="bob")
-        result = user_show(request)
+        user = User(username="bob")
+        dataset_factory = DatasetFactory(request)
+        dataset_factory.__parent__ = user
+        request.context = dataset_factory
+        result = dataset_list(request)
         self.assertIsInstance(result['user'], User)
 
-    def test_dataset_view(self):
+    def test_dataset_show(self):
         from .views import dataset_show
         request = testing.DummyRequest()
         user = User(username="bob")
         dataset = Dataset(
-            dataset_id="12345678", bamboo_host="http://bamboo.io")
+            dataset_id="12345678", bamboo_host="http://bamboo.io",
+            title="Test Dataset")
         dataset.__parent__ = user
         request.context = dataset
         result = dataset_show(request)
@@ -51,25 +55,39 @@ class TestViews(unittest.TestCase):
         dataset_factory = DatasetFactory(request)
         dataset_factory.__parent__ = user
         request.context = dataset_factory
-        request.POST['url'] = "http://bamboo.io/datasets/123456"
+        dataset_url = "http://bamboo.io/datasets/123456"
+        request.POST['url'] = dataset_url
+        request.POST['title'] = "Test Dataset"
         result = dataset_create(request)
         self.assertIsInstance(result, HTTPFound)
+        # retrieve the dataset
+        new_dataset = Dataset.query().filter_by(
+            user=user, bamboo_host="http://bamboo.io", dataset_id="123456")\
+            .one()
         self.assertEqual(
-            result.location, "%(host)s/bob/datasets/123456" %
-                             {'host': request.host_url})
+            result.location,
+            "%(host)s/bob/datasets/%(id)s" % {
+                'host': request.host_url,
+                'id': new_dataset.id})
+        # check dataset fields
+        self.assertEqual(new_dataset.bamboo_host, "http://bamboo.io")
+        self.assertEqual(new_dataset.dataset_id, "123456")
+        self.assertEqual(new_dataset.title, "Test Dataset")
 
     def test_dataset_create_catches_duplicate_datasets(self):
         from .views import dataset_create
         request = testing.DummyRequest()
         user = User(username="bob")
         dataset = Dataset(
-            user=user, bamboo_host="http://bamboo.io", dataset_id="123456")
+            user=user, bamboo_host="http://bamboo.io", dataset_id="123456",
+            title="Test Dataset")
         DBSession.add(user)
         DBSession.flush()
         dataset_factory = DatasetFactory(request)
         dataset_factory.__parent__ = user
         request.context = dataset_factory
         request.POST['url'] = "http://bamboo.io/datasets/123456"
+        request.POST['title'] = "A Duplicate Test Dataset"
         result = dataset_create(request)
         self.assertNotIsInstance(result, HTTPFound)
 
@@ -99,9 +117,8 @@ class TestViewIntegration(unittest.TestCase):
             DBSession.add(user)
         return User.query().first()
 
-    def _create_dataset(self, user_id, dataset_id, url):
-        dataset = Dataset(
-            user_id=user_id, dataset_id=dataset_id, bamboo_host=url)
+    def _create_dataset(self, **kwargs):
+        dataset = Dataset(**kwargs)
         with transaction.manager:
             DBSession.add(dataset)
         return Dataset.query().first()
@@ -116,17 +133,20 @@ class TestViewIntegration(unittest.TestCase):
 
     def test_dataset_show(self):
         user = self._create_user("bob")
-        dataset = self._create_dataset(user.id, "123456", "http://bamboo.io")
-        response = self.testapp.get(
-            '/%(user)s/datasets/%(dataset_id)s' % (
-                {'user': user.username, 'dataset_id': dataset.dataset_id}))
+        dataset = self._create_dataset(
+            user_id=user.id, dataset_id="123456",
+            bamboo_host="http://bamboo.io", title="Test Dataset")
+        url = '/%(user)s/datasets/%(dataset_id)s' % (
+                {'user': user.username, 'dataset_id': dataset.id})
+        response = self.testapp.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_dataset_create(self):
         user = self._create_user("bob")
-        params = {'url': 'http://bamboo.io/datasets/123456'}
+        params = {
+            'url': 'http://bamboo.io/datasets/123456',
+            'title': 'Test Dataset'
+        }
         response = self.testapp.post(
             '/%(user)s/datasets/new' % ({'user': user.username}), params)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location, "http://localhost/bob/datasets/123456")

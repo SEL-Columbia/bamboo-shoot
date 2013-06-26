@@ -26,6 +26,13 @@ def default(request):
             'modilabs', 'datasets')))
 
 
+@view_config(context=User, route_name='user', name='',
+             renderer='templates/user.pt')
+def user_show(request):
+    user = request.context
+    return {'user': user}
+
+
 @view_config(context=DatasetFactory, route_name='user', name='',
              renderer='templates/datasets.pt')
 def dataset_list(request):
@@ -42,11 +49,12 @@ def dataset_show(request):
 
 
 @view_config(context=DatasetFactory, route_name='user', name='new',
-             request_method='POST', renderer='templates/user.pt')
+             request_method='POST', renderer='templates/datasets.pt')
 def dataset_create(request):
     user = request.context.__parent__
     dataset = Dataset(user=user)
     dataset.extract_values_from_url(request.POST['url'])
+    dataset.title = request.POST['title']
     # check for a duplicate
     dataset.save()
     try:
@@ -56,9 +64,7 @@ def dataset_create(request):
         request.session.flash(
             u"The dataset already exists in your account.", "error")
     else:
-        return HTTPFound(
-            request.route_url('user', traverse=(
-                user.username, 'datasets', dataset.dataset_id)))
+        return HTTPFound(dataset.url(request))
     return {'user': user}
 
 

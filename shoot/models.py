@@ -114,7 +114,7 @@ class DatasetFactory(object):
         logger = logging.getLogger(__name__)
         try:
             dataset = Dataset.query().filter_by(
-                dataset_id=key, user=self.__parent__).one()
+                id=key).one()
         except NoResultFound:
             logger.debug(
                 "Couldn't find a dataset with id {0}, {1}".format(
@@ -196,10 +196,11 @@ class User(Base):
 
 
 class Dataset(Base):
-    # TODO: make dataset_id and user_id unique together
+    # TODO: make dataset_id, bamboo_host and user_id unique together
     __tablename__ = 'dataset'
     __table_args__ = (
-        Index('uix_user_id_dataset_id', 'user_id', 'dataset_id', unique=True),)
+        Index('uix_user_id_host_dataset_id', 'user_id', 'bamboo_host',
+              'dataset_id', unique=True),)
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     bamboo_host = Column(String(100), nullable=False)
@@ -221,7 +222,7 @@ class Dataset(Base):
 
     def url(self, request):
         return request.route_url(
-            'user', traverse=(self.user.username, 'datasets', self.dataset_id,))
+            'user', traverse=(self.user.username, 'datasets', self.id,))
 
 
 class Dashboard(Base, Slugable):

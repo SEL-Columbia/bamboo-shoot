@@ -11,6 +11,7 @@ requires = [
     'pyramid',
     'pybamboo',
     'SQLAlchemy',
+    'alembic',
     'transaction',
     'pyramid_tm',
     'pyramid_debugtoolbar',
