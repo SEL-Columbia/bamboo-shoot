@@ -15,9 +15,16 @@
         </div>
         <div class="span10">
             <section id="info" ng-controller="InfoCtrl">
-                <div class="page-header">
-                    <h2>Info</h2>
-                </div>
+                <h2>${dataset.title}</h2>
+                <form>
+                    <fieldset>
+                        <label>Update Dataset name</label>
+                        <input type="text" placeholder="e.g. Students Survey" name="name" ng-model="dataset.label"/>
+                        <br/>
+                        <button ng-click="updateLabel(dataset.label)" class="btn">Update
+                        </button>
+                    </fieldset>
+                </form>
                 <h3>Fields</h3>
                 <table class="table">
                     <thead>
@@ -42,9 +49,7 @@
             </section>
 
             <section id="calculations" ng-controller="CalculationsCtrl">
-                <div class="page-header">
-                    <h2>Calculations</h2>
-                </div>
+                <h2>Calculations</h2>
                 <form>
                     <fieldset>
                         <label>Calculation name</label>

@@ -25,8 +25,8 @@
                 <tbody>
                 <tr tal:repeat="dashboard user.dashboards">
                     <td>${repeat.dashboard.number}</td>
-                    <td>${dashboard.title}</td>
-                    <td><a href="${dashboard.url(request)}">${dashboard.url(request)}</a></td>
+                    <td><a href="${dashboard.url(request)}">${dashboard.title}</a></td>
+                    <td>${dashboard.url(request)}</td>
                     <td>${dashboard.added_on}</td>
                 </tr>
                 </tbody>

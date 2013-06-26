@@ -21,14 +21,17 @@ from .models import (
 
 @view_config(route_name='default', renderer='templates/default.pt')
 def default(request):
-    return {}
+    return HTTPFound(
+        request.route_url('user', traverse=(
+            'modilabs', 'datasets')))
 
 
-@view_config(context=User, route_name='user', name='',
-             renderer='templates/user.pt')
-def user_show(request):
-    user = request.context
-    return {'user': user}
+@view_config(context=DatasetFactory, route_name='user', name='',
+             renderer='templates/datasets.pt')
+def dataset_list(request):
+    user = request.context.__parent__
+    datasets = Dataset.query().filter_by(user=user)
+    return {'user': user, 'datasets': datasets}
 
 
 @view_config(context=Dataset, route_name='user', name='',
@@ -85,7 +88,7 @@ def dashboard_create(request):
     return HTTPFound(
         request.route_url('user', traverse=(
             user.username, 'dashboards', dashboard.slug)))
-            #user.username, 'dashboards', dashboard.slug))) TODO: use this misspelling in tests
+            #user.username, 'dashboards', dahsboard.slug))) TODO: use this misspelling in tests
 
 
 @view_config(context=Dashboard, route_name='user', name='charts',

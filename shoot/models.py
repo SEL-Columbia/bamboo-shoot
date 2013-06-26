@@ -201,9 +201,10 @@ class Dataset(Base):
     __table_args__ = (
         Index('uix_user_id_dataset_id', 'user_id', 'dataset_id', unique=True),)
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    title = Column(String(100), nullable=False)
     bamboo_host = Column(String(100), nullable=False)
     dataset_id = Column(String(100), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship('User', backref=backref('datasets'))
     added_on = Column(DateTime(
         timezone=True), nullable=False, default=func.now())

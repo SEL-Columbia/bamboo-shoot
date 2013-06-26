@@ -50,7 +50,7 @@
 
                 <div class="nav-collapse collapse">
                     <ul class="nav">
-                        <li tal:define="url user.url(request)" tal:attributes="{'class': 'active' if request.url==url else None}"><a href="${url}">Datasets</a></li>
+                        <li tal:define="url request.route_url('user', traverse=(user.username, 'datasets'))" tal:attributes="{'class': 'active' if request.url==url else None}"><a href="${url}">Datasets</a></li>
                         <li tal:define="url request.route_url('user', traverse=(user.username, 'dashboards'))" tal:attributes="{'class': 'active' if request.url==url else None}"><a href="${url}">Dashboards</a></li>
                     </ul>
                 </div>
