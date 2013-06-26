@@ -44,7 +44,7 @@ def deploy(deployment="prod", branch="master"):
         run('source %(activate)s && %(command)s' % d)
 
     run_tests(branch)
-    code_dir = deployment('project_dir', '~/srv/bamboo-shoot')
+    code_dir = deployment.get('project_dir', '~/srv/bamboo-shoot')
     with cd(code_dir):
         run("git checkout %s" % branch)
         run("git pull origin %s" % branch)
