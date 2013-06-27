@@ -40,16 +40,12 @@ def main(argv=sys.argv):
         user = User(username="modilabs")
         dataset1 = Dataset(
             user=user, bamboo_host="http://bamboo.io",
-            dataset_id="d59dee1092e74e2da947ac75c7b5fcfa",
+            dataset_id="a0b34e391dde4e058de72f6404094f02",
             title="Students Survey 1")
         dataset2 = Dataset(
-            user=user, bamboo_host="http://bamboo.io",
-            dataset_id="bb9bdf69384b4400a08fcf7ecc4b0a01",
-            title="Students Survey 2")
-        dataset3 = Dataset(
             user=user, bamboo_host="http://192.168.56.2:8080",
             dataset_id="361bbd13d61c47718dd8e1ec36197acc",
-            title="Students Survey 3")
+            title="Students Survey 2")
         dashboard = Dashboard(user=user, title="Students Survey",
                               slug="students-survey")
         chart1 = Chart(dashboard=dashboard, dataset=dataset3,
