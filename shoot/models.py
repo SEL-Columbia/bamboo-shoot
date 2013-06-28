@@ -12,6 +12,7 @@ from sqlalchemy import (
     DateTime,
     func,
     event,
+    desc
 )
 from sqlalchemy.orm import (relationship, backref, synonym)
 from sqlalchemy.ext.declarative import declarative_base
@@ -57,6 +58,10 @@ class Slugable(object):
     @classmethod
     def slug_source_column(cls):
         return cls.name
+
+
+def newest(query, sort_by):
+    return query.order_by(desc(sort_by)).first()
 
 
 class Model(object):
@@ -267,8 +272,8 @@ class Chart(Base):
     __tablename__ = 'chart'
     id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
-    x_field_id = Column(String(100), nullable=False)
-    y_field_id = Column(String(100), nullable=False)
+    x_field_id = Column(String(100), nullable=True)
+    y_field_id = Column(String(100), nullable=True)
     dashboard_id = Column(Integer, ForeignKey('dashboard.id'), nullable=False)
     dashboard = relationship('Dashboard', backref=backref('charts'))
     dataset_id = Column(Integer, ForeignKey('dataset.id'), nullable=False)

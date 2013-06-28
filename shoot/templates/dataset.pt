@@ -14,54 +14,81 @@
             </ul>
         </div>
         <div class="span10">
-            <section id="info" ng-controller="InfoCtrl">
+            <section id="info" data-ng-controller="InfoCtrl">
                 <h2>${dataset.title}</h2>
                 <form>
                     <fieldset>
                         <label>Update Dataset name</label>
-                        <input type="text" placeholder="e.g. Students Survey" name="name" ng-model="dataset.label"/>
+                        <input type="text" placeholder="e.g. Students Survey" name="name" data-ng-model="dataset.label"/>
                         <br/>
-                        <button ng-click="updateLabel(dataset.label)" class="btn">Update
+                        <button data-ng-click="updateLabel(dataset.label)" class="btn btn-primary">Update
                         </button>
                     </fieldset>
                 </form>
                 <h3>Fields</h3>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <button class="btn btn-primary" data-ng-click="createDasboard()" data-ng-disabled="!has_field_selection">Create Dasboard with
+                            selection
+                        </button>
+                    </div>
+                </div>
                 <table class="table">
                     <thead>
                     <tr>
-                        <td>#</td>
-                        <td>ID</td>
-                        <td>label</td>
-                        <td>simple type</td>
-                        <td>olap type</td>
+                        <td style="width: 5%;">
+                            <input id="fields-select-all" type="checkbox" data-ng-model="check_all"
+                                   data-has-selections="input#fields-select-all:checked"
+                                    data-on-change="setHasFieldSelection" />
+                        </td>
+                        <td style="width: 5%;">#</td>
+                        <td style="width: 20%;">ID</td>
+                        <td style="width: 30%;">label</td>
+                        <td style="width: 20%;">simple type</td>
+                        <td style="width: 20%;">olap type</td>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr ng-repeat="(field, def) in info.schema">
-                        <td>{{$index + 1}}</td>
-                        <td>{{field}}</td>
-                        <td>{{def.label}}</td>
-                        <td>{{def.simpletype}}</td>
-                        <td>{{def.olap_type}}</td>
-                    </tr>
-                    </tbody>
                 </table>
+                <div style="max-height: 400px;overflow-y: auto;">
+                    <form id="field-list" action="" method="post">
+                        <input type="hidden" name="id" value="${dataset.id}"/>
+                        <input type="hidden" name="title" value="${dataset.title}"/>
+                        <table class="table">
+                            <tbody>
+                            <tr data-ng-repeat="(field, def) in info.schema">
+                                <td style="width: 5%;">
+                                    <input data-bamboo-toggle="has_field_selection" id="{{field}}" type="checkbox"
+                                           name="fields[]" value="{{field}}"
+                                           data-ng-checked="check_all"
+                                           data-has-selections="form#field-list input:checked"
+                                           data-on-change="setHasFieldSelection" />
+                                </td>
+                                <td style="width: 5%;">{{$index + 1}}</td>
+                                <td style="width: 20%;">{{field}}</td>
+                                <td style="width: 30%;">{{def.label}}</td>
+                                <td style="width: 20%;">{{def.simpletype}}</td>
+                                <td style="width: 20%;">{{def.olap_type}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
             </section>
 
-            <section id="calculations" ng-controller="CalculationsCtrl">
+            <section id="calculations" data-ng-controller="CalculationsCtrl">
                 <h2>Calculations</h2>
                 <form>
                     <fieldset>
                         <label>Calculation name</label>
                         <input type="text" placeholder="e.g. is_rich"
-                               name="name" ng-model="new_calculation.name"/>
+                               name="name" data-ng-model="new_calculation.name"/>
                         <label>Formula</label>
                         <input type="text" placeholder="e.g. income>50"
                                name="formula"
-                               ng-model="new_calculation.formula"/>
+                               data-ng-model="new_calculation.formula"/>
                         <br/>
-                        <button ng-click="createCalculation(calculation)"
-                                class="btn">Create
+                        <button data-ng-click="createCalculation(calculation)"
+                                class="btn btn-primary">Create
                         </button>
                     </fieldset>
                 </form>
@@ -76,14 +103,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="calculation in calculations">
+                    <tr data-ng-repeat="calculation in calculations">
                         <td>{{$index + 1}}</td>
                         <td>{{calculation.name}}</td>
                         <td>{{calculation.formula}}</td>
                         <td>{{calculation.state}}</td>
                         <td>
-                            <button class="btn"
-                                    ng-click="removeCalculation(calculation)"><i
+                            <button class="btn btn-danger"
+                                    data-ng-click="removeCalculation(calculation)"><i
                                     class="icon-trash"></i></button>
                         </td>
                     </tr>
@@ -91,7 +118,7 @@
                 </table>
             </section>
 
-            <section id="aggregations" ng-controller="AggregationsCtrl">
+            <section id="aggregations" data-ng-controller="AggregationsCtrl">
                 <div class="page-header">
                     <h2>Aggregations</h2>
                 </div>
@@ -103,6 +130,7 @@
         <script type="text/javascript">
         bamboo.settings.URL = '${dataset.bamboo_host}';
         var dataset_id = '${dataset.dataset_id}';
+        var create_dahsboard_url = '${request.route_url('user', traverse=(user.username, 'dashboards', 'new'))}';
         </script>
     </metal:script>
 </metal:main>

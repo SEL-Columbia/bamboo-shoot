@@ -7,7 +7,11 @@ from pyramid.httpexceptions import (
 )
 from pyramid.view import view_config
 
-from sqlalchemy.exc import DBAPIError, IntegrityError
+from sqlalchemy.exc import (
+    DBAPIError,
+    IntegrityError
+)
+from sqlalchemy.orm.exc import NoResultFound
 
 from .models import (
     DBSession,
@@ -16,6 +20,7 @@ from .models import (
     DatasetFactory,
     Dashboard,
     DashboardFactory,
+    Chart,
 )
 
 
@@ -91,10 +96,22 @@ def dashboard_create(request):
     dashboard.title = request.POST['title']
     dashboard.save()
     DBSession.flush()
+    # check if we have a dataset ID and lookup fields
+    if 'id' in request.POST:
+        dataset = Dataset.query().filter_by(id=request.POST['id']).one()
+        # create a chart object for each requested field - this could be a
+        # lot
+        fields = request.POST.getall('fields[]')
+        for field in fields:
+            chart = Chart(title=field, x_field_id=field,
+                          dashboard_id=dashboard.id, dataset=dataset)
+            chart.save()
+
     return HTTPFound(
         request.route_url('user', traverse=(
             user.username, 'dashboards', dashboard.slug)))
             #user.username, 'dashboards', dahsboard.slug))) TODO: use this misspelling in tests
+    # todo: render the dashboard create template if an error occurs
 
 
 @view_config(context=Dashboard, route_name='user', name='charts',

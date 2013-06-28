@@ -48,10 +48,10 @@ def main(argv=sys.argv):
             title="Students Survey 2")
         dashboard = Dashboard(user=user, title="Students Survey",
                               slug="students-survey")
-        chart1 = Chart(dashboard=dashboard, dataset=dataset3,
+        chart1 = Chart(dashboard=dashboard, dataset=dataset1,
                        title="Gender by Grade", x_field_id='sex',
                        y_field_id='grade')
-        chart2 = Chart(dashboard=dashboard, dataset=dataset3,
+        chart2 = Chart(dashboard=dashboard, dataset=dataset1,
                        title="Income by Gender", x_field_id='income',
                        y_field_id='sex')
         DBSession.add(user)

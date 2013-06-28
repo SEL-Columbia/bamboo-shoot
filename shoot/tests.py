@@ -1,6 +1,7 @@
 import unittest
 import transaction
 
+from webob.multidict import MultiDict
 from pyramid import testing
 from pyramid.httpexceptions import (
     HTTPFound,
@@ -9,7 +10,17 @@ from pyramid.httpexceptions import (
     HTTPBadRequest,
 )
 
-from .models import (DBSession, Base, User, Dataset, DatasetFactory)
+from .models import (
+    DBSession,
+    Base,
+    User,
+    Dataset,
+    Dashboard,
+    DatasetFactory,
+    DashboardFactory,
+    newest,
+    Chart
+)
 
 
 class TestViews(unittest.TestCase):
@@ -90,6 +101,40 @@ class TestViews(unittest.TestCase):
         request.POST['title'] = "A Duplicate Test Dataset"
         result = dataset_create(request)
         self.assertNotIsInstance(result, HTTPFound)
+
+    def test_dashboard_create_without_fields(self):
+        pass
+
+    def test_dashboard_create_with_fields(self):
+        from .views import dashboard_create
+        request = testing.DummyRequest()
+        user = User(username="bob")
+        dashboard_factory = DashboardFactory(request)
+        dashboard_factory.__parent__ = user
+        request.context = dashboard_factory
+        dataset = Dataset(user=user, title="Test Dataset",
+                          bamboo_host="http://bamboo.io", dataset_id="12345")
+        DBSession.add(user)
+        DBSession.flush()
+        params = MultiDict([('title', "Test Dashboard"),
+                            ('id', dataset.id),
+                            ('fields[]', 'sex'), ('fields[]', 'income')])
+        request.POST = params
+        result = dashboard_create(request)
+        # check dashboard was created - retrieve newest
+        dashboard = newest(
+            Dashboard.query().filter_by(user=user), Dashboard.id)
+        # check that we get a redirect
+        self.assertIsInstance(result, HTTPFound)
+        # check location
+        self.assertEqual(result.location, "%(host)s/bob/dashboards/%(slug)s" % {
+                'host': request.host_url,
+                'slug': dashboard.slug})
+        # check charts
+        charts = Chart.query().all()
+        #import ipdb; ipdb.set_trace()
+        self.assertEqual(
+            sorted([c.title for c in charts]), sorted(['sex', 'income']))
 
 
 class ModelTests(unittest.TestCase):
