@@ -6,16 +6,14 @@ Bamboo UI client
 Getting Started
 ---------------
 
-- cd <directory containing this file>
+```bash
+git clone git@github.com:modilabs/bamboo-shoot.git
+cd bamboo-shoot
+cp local.ini.dev.sample local.ini
+# open local.ini and update database settings, session_key and auth_key
 
-- cp local.ini.dev.sample local.ini
-
-- open local.ini and update database settings, session_key and auth_key
-
-- create a python virtual env
-
-- $venv/bin/python setup.py develop
-
-- $venv/bin/initialize_shoot_db development.ini
-
-- $venv/bin/pserve development.ini
+# create a python virtual env
+$venv/bin/python setup.py develop
+$venv/bin/initialize_shoot_db development.ini
+$venv/bin/pserve development.ini
+```
