@@ -15,5 +15,11 @@ cp local.ini.dev.sample local.ini
 # create a python virtual env
 $venv/bin/python setup.py develop
 $venv/bin/initialize_shoot_db development.ini
+
+# install submodules
+git submodule init
+git submodule update
+
+# start the server
 $venv/bin/pserve development.ini
 ```
